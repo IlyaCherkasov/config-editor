@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Некоторое имя 1",
+    "values": [
+      "local",
+      "master"
+    ]
+  },
+  {
+    "name": "Некоторое имя 2",
+    "values": [
+      "local",
+      "master"
+    ]
+  },
+  {
+    "name": "Некоторое имя 3",
+    "values": [
+      "local",
+      "master"
+    ]
+  }
+]

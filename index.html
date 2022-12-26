@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Config Editor</title>
+  </head>
+  <style>
+    #root {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  </style>
+  <body>
+    <input id="fileInput" type="file" accept=".json" max="1" />
+    <form id="root" />
+  </body>
+  <script>
+    const parseJsonFile = async (file) =>
+      new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.onload = (event) =>
+          resolve(JSON.parse(event.target?.result));
+        fileReader.onerror = (error) => reject(error);
+        fileReader.readAsText(file);
+      });
+  </script>
+  <script>
+    function download(content, fileName, contentType) {
+      const a = document.createElement('a');
+      const file = new Blob([content], { type: contentType });
+      a.href = URL.createObjectURL(file);
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+  </script>
+  <script>
+    const input = document.getElementById('fileInput');
+    const form = document.getElementById('root');
+
+    input.onchange = async (event) => {
+      form.innerHTML = '';
+      const json = await parseJsonFile(event.target.files[0]);
+      json.forEach((value) => {
+        const label = document.createElement('label');
+        label.textContent = `${value.name}`;
+
+        const select = document.createElement('select');
+        select.name = value.name;
+        value.values.forEach((variant) => {
+          const option = document.createElement('option');
+          option.value = variant;
+          option.textContent = variant;
+
+          select.appendChild(option);
+        });
+
+        label.appendChild(select);
+        form.appendChild(label);
+      });
+
+      const button = document.createElement('button');
+      button.type = 'submit';
+      button.textContent = 'Download';
+      form.appendChild(button);
+    };
+
+    form.onsubmit = (event) => {
+      event.preventDefault();
+      const values = new FormData(event.target);
+      const valuesJson = Object.fromEntries(values.entries());
+      download(JSON.stringify(valuesJson), 'importmap.json', 'application/json');
+    };
+  </script>
+</html>
